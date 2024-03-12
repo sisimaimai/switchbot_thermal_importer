@@ -11,31 +11,43 @@ LOGGER = get_logger(__name__)
 SETTINGS = Settings()
 
 
-def get_swithbot_thermal_info(request: flask.Request) -> None:
-    """SwitchBot APIを使って温湿度データを取得する"""
-    device_id = request.args.get("device_id")
+# TODO: リトライ処理
+def get_swithbot_thermal_info(device_id: str) -> ThermalInfo:
     api = SwitchBotApi()
 
     return api.get_thermal_info(device_id)
 
 
-def publish_to_pubsub(thermal_info: ThermalInfo) -> None:
-    """Pub/Subにデータを送信する"""
+def transfer_all(all_thermal_info: list[ThermalInfo]) -> None:
+    """Pub/Sub経由ですべての温湿度データを送信する"""
     publisher = pubsub_v1.PublisherClient()
-    data = thermal_info.model_dump_json().encode("utf-8")
-    future = publisher.publish(SETTINGS.target_pubsub_topic_path, data)
-    LOGGER.debug(future.result())
+    messages = [
+        thermal_info.model_dump_json().encode("utf-8")
+        for thermal_info in all_thermal_info
+    ]
+    futures = [
+        publisher.publish(SETTINGS.target_pubsub_topic_path, message)
+        for message in messages
+    ]
+
+    for future in futures:
+        LOGGER.debug(future.result())
 
 
 @functions_framework.http
 def main(request: flask.Request) -> flask.Response:
-    # 温湿度データの取得
+    device_ids = request.args.get("device_ids").split(",")
+    LOGGER.info(f"device_ids: {device_ids}")
+
+    # すべてのデバイスで温湿度データの取得
     try:
-        thermal_info = get_swithbot_thermal_info(request)
+        all_thermal_info = [
+            get_swithbot_thermal_info(device_id) for device_id in device_ids
+        ]
     except SwitchBotAPIRequestFailedError as e:
         return flask.Response(str(e), status=503)
 
     # Pub/Subにデータを送信
-    publish_to_pubsub(thermal_info)
+    transfer_all(all_thermal_info)
 
     return flask.Response("OK", status=200)
