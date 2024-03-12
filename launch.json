@@ -1,0 +1,37 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "switchbot.api list device",
+            "type": "python",
+            "request": "launch",
+            "program": "api.py",
+            "args": [
+                "devices"
+            ],
+            "envFile": "${workspaceFolder}/.env",
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "launch local function",
+            "type": "python",
+            "request": "launch",
+            "module": "functions_framework",
+            "args": [
+                "--target=main",
+                "--source=main.py",
+                "--debug"
+            ],
+            "envFile": "${workspaceFolder}/.env",
+            "env": {
+                "LOGLEVEL": "DEBUG",
+            },
+            "console": "integratedTerminal",
+            "justMyCode": true
+        }
+    ]
+}

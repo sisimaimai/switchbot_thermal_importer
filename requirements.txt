@@ -1,0 +1,8 @@
+pyyaml
+functions-framework
+flask
+requests
+pydantic
+pydantic-settings
+click
+pytest
