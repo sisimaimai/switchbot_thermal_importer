@@ -1,6 +1,7 @@
 import functions_framework
 import flask
 from google.cloud import pubsub_v1
+from tenacity import retry, wait_random_exponential, stop_after_attempt
 
 from api import SwitchBotAPIRequestFailedError, SwitchBotApi
 from model.thermal_info import ThermalInfo
@@ -11,7 +12,7 @@ LOGGER = get_logger(__name__)
 SETTINGS = Settings()
 
 
-# TODO: リトライ処理
+@retry(wait=wait_random_exponential(multiplier=1, max=60), stop=stop_after_attempt(3))
 def get_swithbot_thermal_info(device_id: str) -> ThermalInfo:
     api = SwitchBotApi()
 

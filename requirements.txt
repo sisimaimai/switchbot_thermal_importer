@@ -7,3 +7,4 @@ pydantic-settings
 click
 pytest
 google-cloud-pubsub
+tenacity
