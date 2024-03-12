@@ -6,7 +6,7 @@ BQへの格納はPub/SubのBigQueryサブスクリプションを利用する。
 
 vscodeで `launch local function` を起動した状態で↓で動作確認。
 ```bash
-curl "http://localhost:8080/?device_id={デバイスID}"
+curl "http://localhost:8080/?device_ids={カンマ区切りデバイスID}"
 ```
 
 テストはvscodeのTestingでpytestを呼び出して実行。
@@ -15,7 +15,7 @@ curl "http://localhost:8080/?device_id={デバイスID}"
 settings.pyで指定されている環境変数を `.env.prod.yaml` として用意した上で↓を実行。
 
 ```bash
-gcloud functions deploy get-switchbot-thermal \
+gcloud functions deploy import-switchbot-thermal \
     --no-allow-unauthenticated \
     --ingress-settings=internal-only \
     --gen2 \
