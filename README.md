@@ -1,0 +1,1 @@
+# switchbot_thermal_importer
