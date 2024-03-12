@@ -23,7 +23,7 @@ gcloud functions deploy import-switchbot-thermal \
     --region=us-central1 \
     --runtime=python312 \
     --cpu=.083 \
-    --memory=128Mi \
+    --memory=256Mi \
     --min-instances=0 \
     --max-instances=3 \
     --env-vars-file=.env.prod.yaml \
